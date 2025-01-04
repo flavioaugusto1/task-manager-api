@@ -49,10 +49,6 @@ export class TasksController {
             id: z.string().uuid(),
         })
 
-        const requestQuerySchema = z.object({
-            orderBy: z.enum(['asc']),
-        })
-
         const { id } = requestParamSchema.parse(request.params)
 
         const task = await prisma.task.findFirst({
@@ -66,5 +62,31 @@ export class TasksController {
         }
 
         response.json(task)
+    }
+
+    async delete(request: Request, response: Response) {
+        const requestParamSchema = z.object({
+            id: z.string().uuid(),
+        })
+
+        const { id } = requestParamSchema.parse(request.params)
+
+        const task = await prisma.task.findFirst({
+            where: {
+                id,
+            },
+        })
+
+        if (!task) {
+            throw new AppError('Task não encontrada!', 404)
+        }
+
+        await prisma.task.delete({
+            where: {
+                id,
+            },
+        })
+
+        response.json({ message: 'Task deletada com sucesso' })
     }
 }
