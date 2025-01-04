@@ -64,6 +64,37 @@ export class TasksController {
         response.json(task)
     }
 
+    async update(request: Request, response: Response) {
+        const requestBodySchema = z.object({
+            title: z.string(),
+            description: z.string(),
+            time: z.string().date(),
+        })
+
+        const requestParamSchema = z.object({
+            id: z.string().uuid(),
+        })
+
+        const { title, description, time } = requestBodySchema.parse(
+            request.body,
+        )
+
+        const { id } = requestParamSchema.parse(request.params)
+
+        await prisma.task.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                description,
+                time: new Date(time),
+            },
+        })
+
+        response.json({ message: 'Task atualizada com sucesso.' })
+    }
+
     async delete(request: Request, response: Response) {
         const requestParamSchema = z.object({
             id: z.string().uuid(),
