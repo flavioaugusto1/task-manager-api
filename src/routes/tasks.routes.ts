@@ -5,3 +5,5 @@ export const tasksRoute = Router()
 const taskController = new TasksController()
 
 tasksRoute.post('/', taskController.create)
+tasksRoute.get('/', taskController.index)
+tasksRoute.get('/:id', taskController.show)

@@ -22,7 +22,7 @@ model Task {
     id          String   @id @default(uuid())
     title       String
     description String
-    time        String
+    time        DateTime
     createdAt   DateTime @default(now()) @map("created_at")
     updatedAt   DateTime @default(now()) @map("updated_at")
 
