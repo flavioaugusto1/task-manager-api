@@ -11,6 +11,8 @@ export class TasksController {
             time: z.string().date(),
         })
 
+        const { id } = request.user
+
         const { title, description, time } = requestBodySchema.parse(
             request.body,
         )
@@ -20,6 +22,7 @@ export class TasksController {
                 title,
                 description,
                 time: new Date(time),
+                user_id: id,
             },
         })
 
@@ -31,9 +34,14 @@ export class TasksController {
             orderBy: z.enum(['asc', 'desc']).optional(),
         })
 
+        const { id } = request.user
+
         const { orderBy } = requestQuerySchema.parse(request.query)
 
         const tasks = await prisma.task.findMany({
+            where: {
+                user_id: id,
+            },
             orderBy: {
                 time: orderBy,
             },
@@ -49,11 +57,14 @@ export class TasksController {
             id: z.string().uuid(),
         })
 
+        const { id: user_id } = request.user
+
         const { id } = requestParamSchema.parse(request.params)
 
         const task = await prisma.task.findFirst({
             where: {
                 id,
+                user_id,
             },
         })
 
@@ -75,15 +86,28 @@ export class TasksController {
             id: z.string().uuid(),
         })
 
+        const { id: user_id } = request.user
+
         const { title, description, time } = requestBodySchema.parse(
             request.body,
         )
 
         const { id } = requestParamSchema.parse(request.params)
 
+        const task = await prisma.task.findFirst({
+            where: {
+                user_id,
+            },
+        })
+
+        if (!task) {
+            throw new AppError('Task informada não existe.', 404)
+        }
+
         await prisma.task.update({
             where: {
                 id,
+                user_id,
             },
             data: {
                 title,
@@ -100,11 +124,14 @@ export class TasksController {
             id: z.string().uuid(),
         })
 
+        const { id: user_id } = request.user
+
         const { id } = requestParamSchema.parse(request.params)
 
         const task = await prisma.task.findFirst({
             where: {
                 id,
+                user_id,
             },
         })
 
