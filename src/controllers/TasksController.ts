@@ -1,5 +1,6 @@
 import { prisma } from '@/database/prisma'
 import { AppError } from '@/utils/AppError'
+import { getTodayDate } from '@/utils/GetTodayDate'
 import { Request, Response } from 'express'
 import { z } from 'zod'
 
@@ -16,6 +17,15 @@ export class TasksController {
         const { title, description, time } = requestBodySchema.parse(
             request.body,
         )
+
+        const today = getTodayDate()
+
+        if (today > new Date(time)) {
+            throw new AppError(
+                'Não é possível cadastrar uma data menor que a atual',
+                409,
+            )
+        }
 
         const task = await prisma.task.create({
             data: {

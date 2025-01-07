@@ -1,12 +1,10 @@
 import { prisma } from '@/database/prisma'
+import { getTodayDate } from '@/utils/GetTodayDate'
 import { Request, Response } from 'express'
 
 export class TasksControllerToday {
     async index(request: Request, response: Response) {
-        const date = new Date()
-        const day = date.getDate().toString().padStart(2, '0')
-        const month = date.getDay().toString().padStart(2, '0')
-        const year = date.getFullYear().toString()
+        const today = getTodayDate()
 
         const { id: user_id } = request.user
 
@@ -18,7 +16,7 @@ export class TasksControllerToday {
                 time: true,
             },
             where: {
-                time: new Date(`${year}-${month}-${day}`),
+                time: today,
                 user_id,
             },
         })
